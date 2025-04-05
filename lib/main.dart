@@ -32,13 +32,7 @@ class MaterialDevToolsApp extends ThemeWidget {
       child: Widgetbook.material(
         themeMode: ThemeMode.dark,
         addons: [
-          ThemeModeAddon(
-            modes: [
-              WidgetbookThemeMode(name: 'system', mode: ThemeMode.system),
-              WidgetbookThemeMode(name: 'light', mode: ThemeMode.light),
-              WidgetbookThemeMode(name: 'dark', mode: ThemeMode.dark),
-            ],
-          ),
+          ThemeModeAddon(),
           TextScaleAddon(min: 1.0, max: 4.0),
           DeviceFrameAddon(
             devices: [Devices.ios.iPhoneSE, Devices.ios.iPhone13],

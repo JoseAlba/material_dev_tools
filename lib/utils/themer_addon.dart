@@ -2,55 +2,40 @@ import 'package:flutter/material.dart';
 import 'package:material_dev_tools/utils/theme_stateful_widget.dart';
 import 'package:widgetbook/widgetbook.dart' hide ThemeBuilder;
 
-class ThemeModeAddon<T> extends WidgetbookAddon<WidgetbookThemeMode> {
-  ThemeModeAddon({required this.modes})
-    : assert(modes.isNotEmpty, 'modes cannot be empty'),
-      super(name: 'ThemeMode');
+/// A [WidgetbookAddon] for wrapping use-cases with [ThemeMode] widget.
+class ThemeModeAddon extends WidgetbookAddon<ThemeMode> {
+  ThemeModeAddon({this.initialMode = ThemeMode.system})
+    : super(name: 'ThemeMode');
 
-  final List<WidgetbookThemeMode> modes;
+  final ThemeMode initialMode;
+
+  static final modes = {
+    ThemeMode.system: 'System',
+    ThemeMode.light: 'Light',
+    ThemeMode.dark: 'Dark',
+  };
 
   @override
-  List<Field> get fields {
+  List<Field<ThemeMode>> get fields {
     return [
-      ListField<WidgetbookThemeMode>(
-        name: 'name',
-        values: modes,
-        initialValue: modes.first,
-        labelBuilder: (theme) => theme.name,
+      ListField<ThemeMode>(
+        name: 'ThemeMode',
+        initialValue: initialMode,
+        values: modes.keys.toList(),
+        labelBuilder: (value) => modes[value]!,
       ),
     ];
   }
 
   @override
-  WidgetbookThemeMode valueFromQueryGroup(Map<String, String> group) {
-    return valueOf('name', group)!;
+  ThemeMode valueFromQueryGroup(Map<String, String> group) {
+    return valueOf<ThemeMode>('ThemeMode', group)!;
   }
 
   @override
-  Widget buildUseCase(
-    BuildContext context,
-    Widget child,
-    WidgetbookThemeMode setting,
-  ) {
-    return _ThemeModeOverride(themeMode: setting.mode, child: child);
+  Widget buildUseCase(BuildContext context, Widget child, ThemeMode setting) {
+    return _ThemeModeOverride(themeMode: setting, child: child);
   }
-}
-
-class WidgetbookThemeMode {
-  const WidgetbookThemeMode({required this.name, required this.mode});
-
-  final String name;
-  final ThemeMode mode;
-
-  @override
-  bool operator ==(covariant WidgetbookThemeMode other) {
-    if (identical(this, other)) return true;
-
-    return other.name == name && other.mode == mode;
-  }
-
-  @override
-  int get hashCode => name.hashCode ^ mode.hashCode;
 }
 
 /// Widget that allows overriding the theme mode for its descendants
