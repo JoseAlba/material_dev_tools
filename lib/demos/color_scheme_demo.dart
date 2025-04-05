@@ -7,17 +7,11 @@ Widget colorSchemeDemo(BuildContext context) {
   return ColorSchemeDemo();
 }
 
-class ColorSchemeDemo extends ThemeStatefulWidget {
+class ColorSchemeDemo extends ThemeWidget {
   const ColorSchemeDemo({super.key});
 
   @override
-  ThemeState<ColorSchemeDemo> createState() => _ColorSchemeDemoThemeState();
-}
-
-class _ColorSchemeDemoThemeState extends ThemeState<ColorSchemeDemo> {
-  @override
-  Widget build(BuildContext context) {
-    // final colorScheme = currentTheme.colorScheme;
+  Widget build(BuildContext context, ThemeData theme) {
     return Container(
       color: Colors.white,
       child: const Column(
@@ -47,7 +41,7 @@ class _ColorSchemeDemoThemeState extends ThemeState<ColorSchemeDemo> {
 
 const Color _temporaryColor = Colors.pink;
 
-class ColorBox extends ThemeStatefulWidget {
+class ColorBox extends ThemeWidget {
   const ColorBox({super.key, this.color = _temporaryColor, required this.text});
 
   /// The color to paint behind the [text].
@@ -57,41 +51,31 @@ class ColorBox extends ThemeStatefulWidget {
   final String text;
 
   @override
-  ThemeState<ColorBox> createState() => _ColorBoxThemeState();
-}
-
-class _ColorBoxThemeState extends ThemeState<ColorBox> {
-  @override
-  Widget build(BuildContext context) {
-    final textTheme = currentTheme.textTheme;
+  Widget build(BuildContext context, ThemeData theme) {
+    final textTheme = theme.textTheme;
 
     final whiteText = textTheme.bodyMedium!.copyWith(color: Colors.white);
     final blackText = textTheme.bodyMedium!.copyWith(color: Colors.black);
     return Container(
       height: 48,
       width: double.infinity,
-      color: widget.color,
+      color: color,
       child: Center(
         child: DefaultTextStyle(
-          style: widget.color.computeLuminance() > 0.5 ? blackText : whiteText,
-          child: Text(widget.text),
+          style: color.computeLuminance() > 0.5 ? blackText : whiteText,
+          child: Text(text),
         ),
       ),
     );
   }
 }
 
-class _PrimaryContainer extends ThemeStatefulWidget {
+class _PrimaryContainer extends ThemeWidget {
   const _PrimaryContainer();
 
   @override
-  ThemeState<_PrimaryContainer> createState() => _PrimaryContainerThemeState();
-}
-
-class _PrimaryContainerThemeState extends ThemeState<_PrimaryContainer> {
-  @override
-  Widget build(BuildContext context) {
-    ColorScheme colorScheme = currentTheme.colorScheme;
+  Widget build(BuildContext context, ThemeData theme) {
+    ColorScheme colorScheme = theme.colorScheme;
     return Column(
       children: [
         ColorBox(color: colorScheme.primary, text: 'Primary'),
@@ -113,17 +97,12 @@ class _PrimaryContainerThemeState extends ThemeState<_PrimaryContainer> {
   }
 }
 
-class _SecondaryContainer extends ThemeStatefulWidget {
+class _SecondaryContainer extends ThemeWidget {
   const _SecondaryContainer();
 
   @override
-  ThemeState<_SecondaryContainer> createState() => _SecondaryContainerThemeState();
-}
-
-class _SecondaryContainerThemeState extends ThemeState<_SecondaryContainer> {
-  @override
-  Widget build(BuildContext context) {
-    ColorScheme colorScheme = currentTheme.colorScheme;
+  Widget build(BuildContext context, ThemeData theme) {
+    ColorScheme colorScheme = theme.colorScheme;
     return Column(
       children: [
         ColorBox(color: colorScheme.secondary, text: 'Secondary'),
@@ -151,17 +130,12 @@ class _SecondaryContainerThemeState extends ThemeState<_SecondaryContainer> {
   }
 }
 
-class _TertiaryContainer extends ThemeStatefulWidget {
+class _TertiaryContainer extends ThemeWidget {
   const _TertiaryContainer();
 
   @override
-  ThemeState<_TertiaryContainer> createState() => _TertiaryContainerThemeState();
-}
-
-class _TertiaryContainerThemeState extends ThemeState<_TertiaryContainer> {
-  @override
-  Widget build(BuildContext context) {
-    ColorScheme colorScheme = currentTheme.colorScheme;
+  Widget build(BuildContext context, ThemeData theme) {
+    ColorScheme colorScheme = theme.colorScheme;
     return Column(
       children: [
         ColorBox(color: colorScheme.tertiary, text: 'Tertiary'),
@@ -186,17 +160,12 @@ class _TertiaryContainerThemeState extends ThemeState<_TertiaryContainer> {
   }
 }
 
-class _ErrorContainer extends ThemeStatefulWidget {
+class _ErrorContainer extends ThemeWidget {
   const _ErrorContainer();
 
   @override
-  ThemeState<_ErrorContainer> createState() => _ErrorContainerThemeState();
-}
-
-class _ErrorContainerThemeState extends ThemeState<_ErrorContainer> {
-  @override
-  Widget build(BuildContext context) {
-    ColorScheme colorScheme = currentTheme.colorScheme;
+  Widget build(BuildContext context, ThemeData theme) {
+    ColorScheme colorScheme = theme.colorScheme;
     return Column(
       children: [
         ColorBox(color: colorScheme.error, text: 'Error'),
@@ -208,17 +177,12 @@ class _ErrorContainerThemeState extends ThemeState<_ErrorContainer> {
   }
 }
 
-class _SurfaceContainer extends ThemeStatefulWidget {
+class _SurfaceContainer extends ThemeWidget {
   const _SurfaceContainer();
 
   @override
-  ThemeState<_SurfaceContainer> createState() => _SurfaceContainerThemeState();
-}
-
-class _SurfaceContainerThemeState extends ThemeState<_SurfaceContainer> {
-  @override
-  Widget build(BuildContext context) {
-    ColorScheme colorScheme = currentTheme.colorScheme;
+  Widget build(BuildContext context, ThemeData theme) {
+    ColorScheme colorScheme = theme.colorScheme;
     return Column(
       children: [
         Row(
@@ -301,17 +265,12 @@ class _SurfaceContainerThemeState extends ThemeState<_SurfaceContainer> {
   }
 }
 
-class _MiscellaneousContainer extends ThemeStatefulWidget {
+class _MiscellaneousContainer extends ThemeWidget {
   const _MiscellaneousContainer();
 
   @override
-  ThemeState<_MiscellaneousContainer> createState() => _MiscellaneousContainerThemeState();
-}
-
-class _MiscellaneousContainerThemeState extends ThemeState<_MiscellaneousContainer> {
-  @override
-  Widget build(BuildContext context) {
-    ColorScheme colorScheme = currentTheme.colorScheme;
+  Widget build(BuildContext context, ThemeData theme) {
+    ColorScheme colorScheme = theme.colorScheme;
     return Column(
       children: [
         ColorBox(color: colorScheme.inverseSurface, text: 'InverseSurface'),
