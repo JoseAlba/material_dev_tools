@@ -1,3 +1,8 @@
+## 0.0.6
+
+- Updated theme controller
+- Added cache so it improves user experience
+
 ## 0.0.5
 
 - Switch between different theme modes
