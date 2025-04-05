@@ -75,7 +75,7 @@ class _PrimaryContainer extends ThemeWidget {
 
   @override
   Widget build(BuildContext context, ThemeData theme) {
-    ColorScheme colorScheme = Theme.of(context).colorScheme;
+    ColorScheme colorScheme = theme.colorScheme;
     return Column(
       children: [
         ColorBox(color: colorScheme.primary, text: 'Primary'),
