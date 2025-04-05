@@ -12,13 +12,16 @@ class MaterialAppService {
 
   static Future<(ThemeMode, ThemeData, ThemeData)> getMaterialAppData() async {
     final materialAppObj = await getMaterialAppObj();
-    final themeMode = await getThemeMode(materialAppObj);
 
-    final darkThemeObj = await VmService.getObj(materialAppObj, 'darkTheme');
-    final darkTheme = await getThemeData(darkThemeObj);
+    final themeModeObj = await VmService.getObj(materialAppObj, 'themeMode');
+    final themeMode = getThemeMode(themeModeObj!);
 
     final themeObj = await VmService.getObj(materialAppObj, 'theme');
-    final theme = await getThemeData(themeObj);
+    final theme = await getThemeData(themeObj!);
+
+    final darkThemeObj = await VmService.getObj(materialAppObj, 'darkTheme');
+    final darkTheme = await getThemeData(darkThemeObj!);
+
     return (themeMode, theme, darkTheme);
   }
 
@@ -30,33 +33,81 @@ class MaterialAppService {
     return await ServiceManagerService.getObject(materialAppObjectId);
   }
 
-  static Future<ThemeMode> getThemeMode(Obj? materialAppObj) async {
-    final themeModeObj = await VmService.getObj(materialAppObj, 'themeMode');
+  static ThemeMode getThemeMode(Obj themeModeObj) {
+    themeModeObj = themeModeObj as Instance;
 
-    final indexField = (themeModeObj as Instance).fields!.firstWhere(
+    final indexField = themeModeObj.fields!.firstWhere(
       (field) => field.name == 'index',
     );
     final index = int.parse((indexField.value as InstanceRef).valueAsString!);
 
-    return EnumExtension.fromInt(
-      index,
-      ThemeMode.values,
-      defaultValue: ThemeMode.system,
+    return EnumExtension.fromInt(index, ThemeMode.values);
+  }
+
+  static Future<ThemeData> getThemeData(Obj themeObj) async {
+    final colorSchemeObj = await VmService.getObj(themeObj, 'colorScheme');
+    final colorScheme = await getColorScheme(colorSchemeObj!);
+
+    return ThemeData(colorScheme: colorScheme);
+  }
+
+  static Future<ColorScheme> getColorScheme(Obj colorSchemeObj) async {
+    final brightnessObj = await VmService.getObj(colorSchemeObj, 'brightness');
+    final brightness = getBrightness(brightnessObj!);
+
+    final primaryObj = await VmService.getObj(colorSchemeObj, 'primary');
+    final primary = getColor(primaryObj!);
+
+    final onPrimaryObj = await VmService.getObj(colorSchemeObj, 'onPrimary');
+    final onPrimary = getColor(onPrimaryObj!);
+
+    final secondaryObj = await VmService.getObj(colorSchemeObj, 'secondary');
+    final secondary = getColor(secondaryObj!);
+
+    final onSecondaryObj = await VmService.getObj(
+      colorSchemeObj,
+      'onSecondary',
+    );
+    final onSecondary = getColor(onSecondaryObj!);
+
+    final errorObj = await VmService.getObj(colorSchemeObj, 'error');
+    final error = getColor(errorObj!);
+
+    final onErrorObj = await VmService.getObj(colorSchemeObj, 'onError');
+    final onError = getColor(onErrorObj!);
+
+    final surfaceObj = await VmService.getObj(colorSchemeObj, 'surface');
+    final surface = getColor(surfaceObj!);
+
+    final onSurfaceObj = await VmService.getObj(colorSchemeObj, 'onSurface');
+    final onSurface = getColor(onSurfaceObj!);
+
+    return ColorScheme(
+      brightness: brightness,
+      primary: primary,
+      onPrimary: onPrimary,
+      secondary: secondary,
+      onSecondary: onSecondary,
+      error: error,
+      onError: onError,
+      surface: surface,
+      onSurface: onSurface,
     );
   }
 
-  static Future<ThemeData> getThemeData(Obj? themeObj) async {
-    final colorSchemeObj = await VmService.getObj(themeObj, 'colorScheme');
-    final primaryObj = await VmService.getObj(colorSchemeObj, 'primary');
+  static Brightness getBrightness(Obj brightnessObj) {
+    brightnessObj = brightnessObj as Instance;
 
-    Color primaryColor = getColor(primaryObj!);
-    return ThemeData(
-      colorScheme: ColorScheme.fromSeed(seedColor: primaryColor),
+    final indexField = brightnessObj.fields!.firstWhere(
+      (field) => field.name == 'index',
     );
+    final index = int.parse((indexField.value as InstanceRef).valueAsString!);
+
+    return EnumExtension.fromInt(index, Brightness.values);
   }
 
   static Color getColor(Obj colorObj) {
-    colorObj = (colorObj as Instance);
+    colorObj = colorObj as Instance;
 
     final aField = colorObj.fields!.firstWhere((field) => field.name == "a");
     final a = double.parse((aField.value as InstanceRef).valueAsString!);
