@@ -1,3 +1,7 @@
+## 0.0.4 - Add colorScheme demo
+
+- Added ColorScheme demo into widgetbook and improved parsing for ColorScheme.
+
 ## 0.0.3 - themeMode, theme, and darkTheme
 
 - Exposing themeMode, theme, and darkTheme through custom widget.
