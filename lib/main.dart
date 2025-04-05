@@ -10,6 +10,17 @@ void main() async {
   runApp(MaterialDevToolsApp());
 }
 
+// class ThemeTesting extends ThemeWidget {
+//   const ThemeTesting({super.key, required super.builder});
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     this.theme,
+//     // return
+//     return const Placeholder();
+//   }
+// }
+
 @widgetbook.App()
 class MaterialDevToolsApp extends ThemeStatefulWidget {
   const MaterialDevToolsApp({super.key});
@@ -24,7 +35,26 @@ class _MaterialDevToolsAppThemeState extends ThemeState<MaterialDevToolsApp> {
   Widget build(BuildContext context) {
     return DevToolsExtension(
       child: Widgetbook.material(
+        themeMode: ThemeMode.dark,
         addons: [
+          // ThemeAddon(
+          //   themes: [
+          //     WidgetbookTheme(name: 'Light', data: theme),
+          //     WidgetbookTheme(name: 'Dark', data: darkTheme),
+          //   ],
+          //   themeBuilder: (_, __, child) {
+          //     return Themer(
+          //       builder: (
+          //         BuildContext context,
+          //         ThemeData currentTheme,
+          //         Widget? child,
+          //       ) {
+          //         return Theme(data: currentTheme, child: child!);
+          //       },
+          //       child: child,
+          //     );
+          //   },
+          // ),
           TextScaleAddon(min: 1.0, max: 4.0),
           DeviceFrameAddon(
             devices: [Devices.ios.iPhoneSE, Devices.ios.iPhone13],
