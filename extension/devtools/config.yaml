@@ -1,0 +1,4 @@
+name: material
+issueTracker: https://github.com/JoseAlba/material_dev_tools/accessibility_lints/issues
+version: 0.0.1
+materialIconCodePoint: '0xe2a0'
