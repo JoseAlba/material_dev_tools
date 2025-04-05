@@ -55,7 +55,7 @@ abstract class ThemeState<T extends ThemeStatefulWidget> extends State<T> {
   late ThemeData _lightTheme;
   late ThemeData _darkTheme;
 
-  final ThemeController _controller = ThemeController();
+  // final ThemeController _controller = ThemeController();
 
   /// Gets the currently active theme based on themeMode and system brightness
   ThemeData get theme {
@@ -63,7 +63,7 @@ abstract class ThemeState<T extends ThemeStatefulWidget> extends State<T> {
         WidgetsBinding.instance.platformDispatcher.platformBrightness;
 
     // Use the overridden theme mode if available, otherwise use _themeMode
-    final effectiveThemeMode = _controller.themeMode ?? _themeMode;
+    final effectiveThemeMode = ThemeController.themeMode ?? _themeMode;
 
     return switch (effectiveThemeMode) {
       ThemeMode.dark => _darkTheme,
@@ -91,7 +91,7 @@ abstract class ThemeState<T extends ThemeStatefulWidget> extends State<T> {
     }
 
     // Add listener for theme override changes
-    _controller.addListener(_handleThemeOverrideChange);
+    ThemeController.addListener(_handleThemeOverrideChange);
 
     SchedulerBinding.instance.addPostFrameCallback((_) {
       Future.delayed(const Duration(milliseconds: 1), _getTheme);
@@ -101,7 +101,7 @@ abstract class ThemeState<T extends ThemeStatefulWidget> extends State<T> {
   @override
   void dispose() {
     // Remove listener when disposed
-    _controller.removeListener(_handleThemeOverrideChange);
+    ThemeController.removeListener(_handleThemeOverrideChange);
     super.dispose();
   }
 

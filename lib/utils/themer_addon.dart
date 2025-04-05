@@ -53,22 +53,22 @@ class _ThemeModeOverrideState extends State<_ThemeModeOverride> {
   @override
   void initState() {
     super.initState();
-    ThemeController().themeMode = widget.themeMode;
+    ThemeController.themeMode = widget.themeMode;
   }
 
   @override
   void didUpdateWidget(_ThemeModeOverride oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.themeMode != widget.themeMode) {
-      ThemeController().themeMode = widget.themeMode;
+      ThemeController.themeMode = widget.themeMode;
     }
   }
 
   @override
   void dispose() {
     // Only clear if this is the active override
-    if (ThemeController().themeMode == widget.themeMode) {
-      ThemeController().clearOverride();
+    if (ThemeController.themeMode == widget.themeMode) {
+      ThemeController.clearOverride();
     }
     super.dispose();
   }
