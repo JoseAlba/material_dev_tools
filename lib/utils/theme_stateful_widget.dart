@@ -2,21 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:material_dev_tools/services/theme_service.dart';
 
-ThemeData _defaultTheme = ThemeData.dark();
-
-class _ThemeMemoryDatasource {
-  const _ThemeMemoryDatasource._();
-
-  static ThemeData _theme = _defaultTheme;
-
-  static void saveTheme(ThemeData theme) {
-    _theme = theme;
-  }
-
-  static ThemeData getTheme() {
-    return _theme;
-  }
-}
+const _defaultThemeMode = ThemeMode.dark;
+final _defaultTheme = ThemeData.dark();
+final _defaultDarkTheme = ThemeData.dark();
 
 abstract class ThemeStatefulWidget extends StatefulWidget {
   const ThemeStatefulWidget({super.key});
@@ -29,27 +17,30 @@ abstract class ThemeStatefulWidget extends StatefulWidget {
 }
 
 abstract class ThemeState<T extends ThemeStatefulWidget> extends State<T> {
-  late ThemeData theme = ThemeData.light();
+  ThemeMode themeMode = _defaultThemeMode;
+  ThemeData theme = _defaultTheme;
+  ThemeData darkTheme = _defaultDarkTheme;
+  ThemeData currentTheme = _defaultDarkTheme;
 
   @override
   @protected
   @mustCallSuper
   void initState() {
     super.initState();
-    theme = _ThemeMemoryDatasource.getTheme();
 
     SchedulerBinding.instance.addPostFrameCallback((_) {
-      Future.delayed(const Duration(milliseconds: 1), _fetchTheme);
+      Future.delayed(const Duration(milliseconds: 1), _getTheme);
     });
   }
 
-  Future<void> _fetchTheme() async {
+  Future<void> _getTheme() async {
     try {
-      theme = await ThemeService.fetchTheme();
-    } catch (e) {
-      theme = _ThemeMemoryDatasource.getTheme();
+      final themeRecord = await MaterialAppService.getMaterialAppData();
+      themeMode = themeRecord.$1;
+      theme = themeRecord.$2;
+      darkTheme = themeRecord.$3;
+      currentTheme = ThemeMode.dark == ThemeMode.dark ? darkTheme : theme;
     } finally {
-      _ThemeMemoryDatasource.saveTheme(theme);
       if (mounted) {
         setState(() {});
       }

@@ -17,7 +17,7 @@ class ColorSchemeDemo extends ThemeStatefulWidget {
 class _ColorSchemeDemoThemeState extends ThemeState<ColorSchemeDemo> {
   @override
   Widget build(BuildContext context) {
-    final colorScheme = theme.colorScheme;
+    final colorScheme = currentTheme.colorScheme;
     return Container(
       height: 48,
       width: 48,
