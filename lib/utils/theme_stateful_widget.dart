@@ -1,53 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:material_dev_tools/services/theme_service.dart';
+import 'package:material_dev_tools/utils/theme_cache.dart';
+import 'package:material_dev_tools/utils/theme_controller.dart';
 
 typedef ThemeBuilder =
     Widget Function(BuildContext context, ThemeData theme, Widget? child);
-
-/// Class to manage theme override across the application
-class ThemeOverride {
-  static final ThemeOverride _instance = ThemeOverride._internal();
-
-  factory ThemeOverride() => _instance;
-
-  ThemeOverride._internal();
-
-  ThemeMode? _overriddenThemeMode;
-  final List<VoidCallback> _listeners = [];
-
-  /// Get the overridden theme mode or null if no override is set
-  ThemeMode? get overriddenThemeMode => _overriddenThemeMode;
-
-  /// Set an override for the theme mode across the application
-  void setOverride(ThemeMode? themeMode) {
-    _overriddenThemeMode = themeMode;
-    _notifyListeners();
-  }
-
-  /// Clear any theme mode override
-  void clearOverride() {
-    _overriddenThemeMode = null;
-    _notifyListeners();
-  }
-
-  /// Add a listener to be notified when the override changes
-  void addListener(VoidCallback listener) {
-    _listeners.add(listener);
-  }
-
-  /// Remove a previously added listener
-  void removeListener(VoidCallback listener) {
-    _listeners.remove(listener);
-  }
-
-  /// Notify all listeners of a change
-  void _notifyListeners() {
-    for (final listener in _listeners) {
-      listener();
-    }
-  }
-}
 
 class Themer extends ThemeWidget {
   const Themer({super.key, required this.builder, this.child});
@@ -93,11 +51,11 @@ abstract class ThemeStatefulWidget extends StatefulWidget {
 /// Base state class for ThemeStatefulWidget that handles theme loading and
 /// access
 abstract class ThemeState<T extends ThemeStatefulWidget> extends State<T> {
-  ThemeMode _themeMode = _defaultThemeMode;
-  ThemeData _lightTheme = _defaultLightTheme;
-  ThemeData _darkTheme = _defaultDarkTheme;
+  late ThemeMode _themeMode;
+  late ThemeData _lightTheme;
+  late ThemeData _darkTheme;
 
-  final ThemeOverride _themeOverride = ThemeOverride();
+  final ThemeController _controller = ThemeController();
 
   /// Gets the currently active theme based on themeMode and system brightness
   ThemeData get theme {
@@ -105,7 +63,7 @@ abstract class ThemeState<T extends ThemeStatefulWidget> extends State<T> {
         WidgetsBinding.instance.platformDispatcher.platformBrightness;
 
     // Use the overridden theme mode if available, otherwise use _themeMode
-    final effectiveThemeMode = _themeOverride.overriddenThemeMode ?? _themeMode;
+    final effectiveThemeMode = _controller.themeMode ?? _themeMode;
 
     return switch (effectiveThemeMode) {
       ThemeMode.dark => _darkTheme,
@@ -121,8 +79,19 @@ abstract class ThemeState<T extends ThemeStatefulWidget> extends State<T> {
   void initState() {
     super.initState();
 
+    // Initialize with cached values if available, otherwise use defaults
+    if (ThemeCache.hasCache()) {
+      _themeMode = ThemeCache.cachedThemeMode!;
+      _lightTheme = ThemeCache.cachedLightTheme!;
+      _darkTheme = ThemeCache.cachedDarkTheme!;
+    } else {
+      _themeMode = _defaultThemeMode;
+      _lightTheme = _defaultLightTheme;
+      _darkTheme = _defaultDarkTheme;
+    }
+
     // Add listener for theme override changes
-    _themeOverride.addListener(_handleThemeOverrideChange);
+    _controller.addListener(_handleThemeOverrideChange);
 
     SchedulerBinding.instance.addPostFrameCallback((_) {
       Future.delayed(const Duration(milliseconds: 1), _getTheme);
@@ -132,7 +101,7 @@ abstract class ThemeState<T extends ThemeStatefulWidget> extends State<T> {
   @override
   void dispose() {
     // Remove listener when disposed
-    _themeOverride.removeListener(_handleThemeOverrideChange);
+    _controller.removeListener(_handleThemeOverrideChange);
     super.dispose();
   }
 
@@ -152,15 +121,28 @@ abstract class ThemeState<T extends ThemeStatefulWidget> extends State<T> {
 
       if (!mounted) return;
 
-      _themeMode = themeRecord.$1;
-      _lightTheme = themeRecord.$2;
-      _darkTheme = themeRecord.$3;
-      setState(() {});
+      // Check if theme values have actually changed
+      bool themeChanged =
+          themeRecord.$1 != _themeMode ||
+          themeRecord.$2 != _lightTheme ||
+          themeRecord.$3 != _darkTheme;
+
+      if (themeChanged) {
+        // Update instance variables
+        _themeMode = themeRecord.$1;
+        _lightTheme = themeRecord.$2;
+        _darkTheme = themeRecord.$3;
+
+        // Update global cache
+        ThemeCache.updateCache(_themeMode, _lightTheme, _darkTheme);
+
+        // Only call setState if there were actual changes
+        setState(() {});
+      }
     } catch (e) {
       rethrow;
     }
   }
-
 
   // Default theme values would be defined here
   static const ThemeMode _defaultThemeMode = ThemeMode.system;

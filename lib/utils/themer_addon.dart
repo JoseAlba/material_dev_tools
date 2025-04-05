@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:material_dev_tools/utils/theme_stateful_widget.dart';
+import 'package:material_dev_tools/utils/theme_controller.dart';
 import 'package:widgetbook/widgetbook.dart' hide ThemeBuilder;
 
 /// A [WidgetbookAddon] for wrapping use-cases with [ThemeMode] widget.
@@ -53,22 +53,22 @@ class _ThemeModeOverrideState extends State<_ThemeModeOverride> {
   @override
   void initState() {
     super.initState();
-    ThemeOverride().setOverride(widget.themeMode);
+    ThemeController().themeMode = widget.themeMode;
   }
 
   @override
   void didUpdateWidget(_ThemeModeOverride oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.themeMode != widget.themeMode) {
-      ThemeOverride().setOverride(widget.themeMode);
+      ThemeController().themeMode = widget.themeMode;
     }
   }
 
   @override
   void dispose() {
     // Only clear if this is the active override
-    if (ThemeOverride().overriddenThemeMode == widget.themeMode) {
-      ThemeOverride().clearOverride();
+    if (ThemeController().themeMode == widget.themeMode) {
+      ThemeController().clearOverride();
     }
     super.dispose();
   }
