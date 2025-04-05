@@ -1,70 +1,40 @@
-import 'package:devtools_app_shared/ui.dart';
 import 'package:devtools_extensions/devtools_extensions.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
-import 'package:material_dev_tools/services/service_manager_service.dart';
-import 'package:material_dev_tools/services/theme_service.dart';
+import 'package:material_dev_tools/utils/theme_stateful_widget.dart';
+import 'package:widgetbook/widgetbook.dart';
+import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 
-void main() {
-  runApp(const MaterialDevTools());
+import 'main.directories.g.dart';
+
+void main() async {
+  runApp(MaterialDevToolsApp());
 }
 
-class MaterialDevTools extends StatefulWidget {
-  const MaterialDevTools({super.key});
+@widgetbook.App()
+class MaterialDevToolsApp extends ThemeStatefulWidget {
+  const MaterialDevToolsApp({super.key});
 
   @override
-  State<MaterialDevTools> createState() => _MaterialDevToolsState();
+  ThemeState<MaterialDevToolsApp> createState() =>
+      _MaterialDevToolsAppThemeState();
 }
 
-class _MaterialDevToolsState extends State<MaterialDevTools> {
-  ThemeData? themeData;
-
-  @override
-  void initState() {
-    super.initState();
-
-    // For some reason init and WidgetsBinding.instance!.addPostFrameCallback
-    // does not work.
-    SchedulerBinding.instance.addPostFrameCallback((_) {
-      Future.delayed(const Duration(seconds: 1), () {
-        if (mounted) {
-          _fetchTheme();
-        }
-      });
-    });
-  }
-
-  Future<ThemeData?> _fetchTheme() async {
-    themeData = await ThemeService.fetchTheme();
-    setState(() {});
-    return themeData;
-  }
-
+class _MaterialDevToolsAppThemeState extends ThemeState<MaterialDevToolsApp> {
   @override
   Widget build(BuildContext context) {
-    final controller = TextEditingController();
-
     return DevToolsExtension(
-      child: Column(
-        children: [
-          DevToolsClearableTextField(
-            controller: controller,
-            hintText: 'Eval',
-            onSubmitted: (text) {
-              ServiceManagerService.evalInRunningApp(text);
-            },
+      child: Widgetbook.material(
+        addons: [
+          TextScaleAddon(min: 1.0, max: 4.0),
+          DeviceFrameAddon(
+            devices: [Devices.ios.iPhoneSE, Devices.ios.iPhone13],
           ),
-          DevToolsButton(
-            onPressed: () async => await _fetchTheme(),
-            label: 'Toggle App theme',
-          ),
-          Container(
-            height: 48,
-            width: 48,
-            color: themeData?.colorScheme.primary,
-            child: Center(child: Text('primary')),
-          ),
+          AlignmentAddon(initialAlignment: Alignment.center),
+          InspectorAddon(enabled: true),
+          TimeDilationAddon(),
+          ZoomAddon(initialZoom: 1.0),
         ],
+        directories: directories,
       ),
     );
   }
